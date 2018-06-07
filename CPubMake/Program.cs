@@ -18,14 +18,15 @@ namespace CPubMake
         public static Task Main(string[] args) => CommandLineApplication.ExecuteAsync<Program>(args);
 
         [Option("-c|--cover", CommandOptionType.SingleValue, Description = "Path to image to include as cover")]
+        [FileExists]
         public string CoverPath { get; }
 
         [Option("-i|--image", CommandOptionType.MultipleValue, Description = "Path to image to include in epub. Specify multiple times in the order in which images should be included")]
-        //[FileExists]
+        [FileExists]
         public IReadOnlyList<string> InputImagePaths { get; }
 
         [Option("-d|--directory", CommandOptionType.MultipleValue, Description = "Path to image folder to include in epub. All files of supported format found inside (non recursively) will be included in the epub in alphabetical order")]
-        //[DirectoryExists]
+        [DirectoryExists]
         public IReadOnlyList<string> InputDirectoryPaths { get; }
 
         [Option("-o|--output", CommandOptionType.SingleValue, Description = "Path to output file")]
@@ -77,7 +78,7 @@ namespace CPubMake
                     if (targetFiles.cover != null)
                     {
                         Console.WriteLine($"Adding {targetFiles.cover.Name} as cover");
-                        await AddImageToEpub(writer, targetFiles.cover, false);
+                        await AddImageToEpub(writer, targetFiles.cover, true);
                     }
 
                     foreach (var i in targetFiles.pages)
@@ -129,8 +130,7 @@ namespace CPubMake
                 var files = i.EnumerateFiles();
                 pages.AddRange(files.Where(d => SupportedImageExtension.Contains(d.Extension)).OrderBy(d => d.FullName));
             }
-
-            //Remove cover from pages list if present
+         
             var cover = default(FileInfo);
             if (!string.IsNullOrEmpty(CoverPath))
             {
@@ -141,6 +141,7 @@ namespace CPubMake
                 }
             }
 
+            //Remove cover from pages list if present
             if (cover != null)
             {
                 pages = pages.Where(d => d.FullName != cover.FullName).ToList();
