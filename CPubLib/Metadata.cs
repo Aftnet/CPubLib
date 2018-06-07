@@ -11,7 +11,7 @@ namespace CPubLib
         public string Title { get; set; }
         public string Author { get; set; }
         public string Publisher { get; set; }
-        public DateTime PublishingDate { get; set; } = DateTime.MinValue;
+        public DateTime PublishingDate { get; set; } = DateTime.UtcNow;
         public string Language { get; set; } = DefaultLanguage;
 
         public string Description { get; set; }

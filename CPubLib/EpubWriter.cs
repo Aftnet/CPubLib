@@ -111,7 +111,7 @@ namespace CPubLib
             }
         }
 
-        private async Task FinalizeAsync()
+        public async Task FinalizeAsync()
         {
             if (DynamicDataAdded)
             {

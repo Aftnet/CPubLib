@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPubLib", "CPubLib\CPubLib.csproj", "{C45969CE-E814-4E76-8ED2-0C4E9A743C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CPubLib", "CPubLib\CPubLib.csproj", "{C45969CE-E814-4E76-8ED2-0C4E9A743C40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPubLib.Test", "CPubLib.Test\CPubLib.Test.csproj", "{5783C956-4171-44E5-845E-F1D644EA8CAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CPubLib.Test", "CPubLib.Test\CPubLib.Test.csproj", "{5783C956-4171-44E5-845E-F1D644EA8CAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPubMake", "CPubMake\CPubMake.csproj", "{EB380C46-C34C-4FF5-BFC8-1838BFE98123}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5783C956-4171-44E5-845E-F1D644EA8CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5783C956-4171-44E5-845E-F1D644EA8CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5783C956-4171-44E5-845E-F1D644EA8CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB380C46-C34C-4FF5-BFC8-1838BFE98123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB380C46-C34C-4FF5-BFC8-1838BFE98123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB380C46-C34C-4FF5-BFC8-1838BFE98123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB380C46-C34C-4FF5-BFC8-1838BFE98123}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

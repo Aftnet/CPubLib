@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CPubMake": {
+      "commandName": "Project",
+      "commandLineArgs": "-i one.jpg -i two.jpg -d \"C:\\Users\\Alberto\\Documents\\Projects\\ComicPub\\CPubLib.Test\\TestImages\" -o omg.epub --title \"Test itle\""
+    }
+  }
+}
