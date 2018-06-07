@@ -44,8 +44,8 @@ namespace CPubMake
         [Option("--description", CommandOptionType.SingleValue)]
         public string Description { get; set; }
 
-        [Option("--tags", CommandOptionType.SingleValue, Description = "Comma separated list of tags")]
-        public string Tags { get; set; }
+        [Option("--tag", CommandOptionType.MultipleValue)]
+        public IReadOnlyList<string> Tags { get; set; }
 
         private async Task<int> OnExecuteAsync()
         {
@@ -55,7 +55,6 @@ namespace CPubMake
             }
 
             var outputFile = new FileInfo(OutputPath);
-            AutoGenerateMissingMetadata(outputFile);
             var targetFiles = GenerateTargetFilesList();
             try
             {
@@ -63,13 +62,16 @@ namespace CPubMake
                 using (var writer = new EPUBWriter(outStream))
                 {
                     var metadata = writer.Metadata;
-                    metadata.Title = Title;
-                    metadata.Author = Author;
-                    metadata.Publisher = Publisher;
+                    metadata.Title = !string.IsNullOrEmpty(Title) ? Title : outputFile.Name;
+                    metadata.Author = !string.IsNullOrEmpty(Author) ? Author : nameof(CPubMake);
+                    metadata.Publisher = !string.IsNullOrEmpty(Publisher) ? Publisher : nameof(CPubMake);
                     metadata.Description = Description;
-                    foreach(var i in Tags.Split(TagsSeparator).Distinct())
+                    if (Tags != null)
                     {
-                        metadata.Tags.Add(i);
+                        foreach (var i in Tags.Distinct())
+                        {
+                            metadata.Tags.Add(i);
+                        }
                     }
 
                     if (targetFiles.cover != null)
@@ -129,12 +131,17 @@ namespace CPubMake
             }
 
             //Remove cover from pages list if present
-            var cover = string.IsNullOrEmpty(CoverPath) ? null : new FileInfo(CoverPath);
-            if (!cover.Exists)
+            var cover = default(FileInfo);
+            if (!string.IsNullOrEmpty(CoverPath))
             {
-                cover = null;
+                var testCover = new FileInfo(CoverPath);
+                if (testCover.Exists)
+                {
+                    cover = testCover;
+                }
             }
-            else
+
+            if (cover != null)
             {
                 pages = pages.Where(d => d.FullName != cover.FullName).ToList();
             }

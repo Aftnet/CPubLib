@@ -2,7 +2,7 @@
   "profiles": {
     "CPubMake": {
       "commandName": "Project",
-      "commandLineArgs": "-i one.jpg -i two.jpg -d \"C:\\Users\\Alberto\\Documents\\Projects\\ComicPub\\CPubLib.Test\\TestImages\" -o omg.epub --title \"Test itle\""
+      "commandLineArgs": "-i one.jpg -i two.jpg -d \"..\\..\\..\\..\\CPubLib.Test\\TestImages\" -o omg.epub --title \"Test Title\""
     }
   }
 }
