@@ -50,6 +50,9 @@ namespace CPubMake
 
         private async Task<int> OnExecuteAsync()
         {
+            var banner = $"{nameof(CPubMake)} v{typeof(Program).Assembly.GetName().Version.ToString()}";
+            Console.WriteLine(banner);
+
             if (string.IsNullOrEmpty(OutputPath))
             {
                 Console.WriteLine("Specify an output file");
@@ -77,13 +80,13 @@ namespace CPubMake
 
                     if (targetFiles.cover != null)
                     {
-                        Console.WriteLine($"Adding {targetFiles.cover.Name} as cover");
+                        Console.Write($"\rAdding {targetFiles.cover.Name} as cover");
                         await AddImageToEpub(writer, targetFiles.cover, true);
                     }
 
                     foreach (var i in targetFiles.pages)
                     {
-                        Console.WriteLine($"Adding {i.Name} as page");
+                        Console.Write($"\rAdding {i.Name} as page");
                         await AddImageToEpub(writer, i, false);
                     }
 
@@ -94,7 +97,7 @@ namespace CPubMake
             {
                 Console.WriteLine($"Error generating {outputFile.FullName}");
             }
-            Console.WriteLine($"Hellolol!");
+
             return 0;
         }
 

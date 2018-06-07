@@ -132,6 +132,7 @@ namespace CPubLib
             }
 
             await AddTextEntryAsync(Strings.EpubNavEntryName, EpubXmlWriter.GenerateNavXML(Pages));
+            DynamicDataAdded = true;
         }
 
         private async Task AddStaticDataAsync()
