@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CPubMake": {
+      "commandName": "Project",
+      "commandLineArgs": "-d \"z:\\PKNA\\PK S01 V00\" -c \"z:\\PKNA\\PK S01 V00\\PK S01 V00 P001.jpg\" -o \"z:\\pkna0.epub\" --title \"PKNA 0\" --author \"Disney Italia\" --publisher \"Disney Italia\" --tag \"Sci-fi comic\""
+    }
+  }
+}

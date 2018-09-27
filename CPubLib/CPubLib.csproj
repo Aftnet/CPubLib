@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Alberto Fustinoni</Authors>
+    <PackageProjectUrl>https://github.com/Aftnet/CPubLib</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/Aftnet/CPubLib/master/License.txt</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Aftnet/CPubLib/master/Logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Aftnet/CPubLib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Epub</PackageTags>
+    <Version>0.1.0-beta</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

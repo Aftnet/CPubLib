@@ -1,0 +1,27 @@
+version: 0.1.{build}-beta
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+image: Visual Studio 2017
+configuration: Release
+shallow_clone: true
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+before_build:
+- ps: '&nuget restore'
+build:
+  verbosity: minimal
+test:
+  assemblies:
+    only:
+    - '**\*.Test.dll'
+artifacts:
+- path: '**\*.nupkg'
