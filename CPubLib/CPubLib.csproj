@@ -11,6 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Epub</PackageTags>
     <Version>0.1.0-beta</Version>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
