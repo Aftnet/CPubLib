@@ -1,5 +1,5 @@
 ﻿using CPubLib.Internal;
-using System.Collections.Generic;
+using SixLabors.ImageSharp;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -7,30 +7,40 @@ namespace CPubLib.Platform
 {
     internal class ImageDecoder : IImageDecoder
     {
-        private static IReadOnlyDictionary<string, ImageFormat> MimeTypeMapping { get; } = new Dictionary<string, ImageFormat>
+        public Task<ImageInfo> DecodeAsync(Stream imageStream)
         {
-            { SixLabors.ImageSharp.ImageFormats.Bmp.DefaultMimeType, ImageFormat.Bmp },
-            { SixLabors.ImageSharp.ImageFormats.Jpeg.DefaultMimeType, ImageFormat.Jpeg },
-            { SixLabors.ImageSharp.ImageFormats.Gif.DefaultMimeType, ImageFormat.Gif },
-            { SixLabors.ImageSharp.ImageFormats.Png.DefaultMimeType, ImageFormat.Png },
-        };
+            var output = default(ImageInfo);
 
-        public Task<ImageFormat> DetectFormatAsync(Stream imageStream)
-        {
-            var output = default(ImageFormat);
-            var format = SixLabors.ImageSharp.Image.DetectFormat(imageStream);
-            if (MimeTypeMapping.ContainsKey(format.DefaultMimeType))
+            try
             {
-                output = MimeTypeMapping[format.DefaultMimeType];
+                var format = Image.DetectFormat(imageStream);
+                if (format != null)
+                {
+                    var imageInfo = Image.Identify(imageStream);
+
+                    if (format.DefaultMimeType == ImageFormats.Bmp.DefaultMimeType)
+                    {
+                        output = ImageInfo.Bmp(imageInfo.Width, imageInfo.Height);
+                    }
+                    else if (format.DefaultMimeType == ImageFormats.Gif.DefaultMimeType)
+                    {
+                        output = ImageInfo.Gif(imageInfo.Width, imageInfo.Height);
+                    }
+                    else if (format.DefaultMimeType == ImageFormats.Jpeg.DefaultMimeType)
+                    {
+                        output = ImageInfo.Jpeg(imageInfo.Width, imageInfo.Height);
+                    }
+                    else if (format.DefaultMimeType == ImageFormats.Png.DefaultMimeType)
+                    {
+                        output = ImageInfo.Png(imageInfo.Width, imageInfo.Height);
+                    }
+                }
+            }
+            catch
+            {
+                output = null;
             }
 
-            return Task.FromResult(output);
-        }
-
-        public Task<ImageSize> DetectSizeAsync(Stream imageStream)
-        {
-            var imageInfo = SixLabors.ImageSharp.Image.Identify(imageStream);
-            var output = new ImageSize { Width = imageInfo.Width, Height = imageInfo.Height };
             return Task.FromResult(output);
         }
     }

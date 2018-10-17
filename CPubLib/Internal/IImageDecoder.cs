@@ -3,20 +3,39 @@ using System.Threading.Tasks;
 
 namespace CPubLib.Internal
 {
-    internal class ImageFormat
+    internal class ImageInfo
     {
-        public static ImageFormat Bmp { get; } = new ImageFormat(".bmp", "image/bmp");
-        public static ImageFormat Jpeg { get; } = new ImageFormat(".jpg", "image/jpeg");
-        public static ImageFormat Gif { get; } = new ImageFormat(".gif", "image/gif");
-        public static ImageFormat Png { get; } = new ImageFormat(".png", "image/png");
+        public static ImageInfo Bmp(int width, int height)
+        {
+            return new ImageInfo(".bmp", "image/bmp", width, height);
+        }
+
+        public static ImageInfo Gif(int width, int height)
+        {
+            return new ImageInfo(".gif", "image/gif", width, height);
+        }
+
+        public static ImageInfo Jpeg(int width, int height)
+        {
+            return new ImageInfo(".jpg", "image/jpeg", width, height);
+        }
+
+        public static ImageInfo Png(int width, int height)
+        {
+            return new ImageInfo(".png", "image/png", width, height);
+        }
 
         public string Extension { get; }
         public string MimeType { get; }
+        public int Width { get; }
+        public int Height { get; }
 
-        private ImageFormat(string extension, string mimeType)
+        private ImageInfo(string extension, string mimeType, int width, int height)
         {
             Extension = extension;
             MimeType = mimeType;
+            Width = width;
+            Height = height;
         }
     }
 
@@ -28,7 +47,6 @@ namespace CPubLib.Internal
 
     internal interface IImageDecoder
     {
-        Task<ImageFormat> DetectFormatAsync(Stream imageStream);
-        Task<ImageSize> DetectSizeAsync(Stream imageStream);
+        Task<ImageInfo> DecodeAsync(Stream imageStream);
     }
 }

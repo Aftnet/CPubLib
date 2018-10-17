@@ -8,24 +8,37 @@ namespace CPubLib.Platform
 {
     internal class ImageDecoder : IImageDecoder
     {
-        public async Task<ImageFormat> DetectFormatAsync(Stream imageStream)
+        public async Task<ImageInfo> DecodeAsync(Stream imageStream)
         {
+            var output = default(ImageInfo);
             try
             {
                 var decoder = await BitmapDecoder.CreateAsync(imageStream.AsRandomAccessStream());
-                //decoder.DecoderInformation.CodecId == BitmapDecoder.BmpDecoderId
+                var codecId = decoder.DecoderInformation.CodecId;
+
+                if (codecId == BitmapDecoder.BmpDecoderId)
+                {
+                    output = ImageInfo.Bmp((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                }
+                else if (codecId == BitmapDecoder.GifDecoderId)
+                {
+                    output = ImageInfo.Gif((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                }
+                else if (codecId == BitmapDecoder.JpegDecoderId)
+                {
+                    output = ImageInfo.Jpeg((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                }
+                else if (codecId == BitmapDecoder.PngDecoderId)
+                {
+                    output = ImageInfo.Png((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                }
             }
             catch
             {
-                return null;
+                output = null;
             }
 
-            return null;
-        }
-
-        public Task<ImageSize> DetectSizeAsync(Stream imageStream)
-        {
-            return null;
+            return output;
         }
     }
 }
