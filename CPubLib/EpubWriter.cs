@@ -1,4 +1,5 @@
 ﻿using CPubLib.Internal;
+using CPubLib.Platform;
 using CPubLib.Resources;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace CPubLib
 {
     public class EPUBWriter : IDisposable
     {
+        private static IImageDecoder ImageDecoder { get; } = new ImageDecoder();
         private ZipArchive BackingArchive { get; }
         private bool StaticDataAdded { get; set; } = false;
         private bool DynamicDataAdded { get; set; } = false;
@@ -79,23 +81,23 @@ namespace CPubLib
                     await imageData.CopyToAsync(sourceStream);
                 }
 
-                var imageFormat = await Task.Run(() => SixLabors.ImageSharp.Image.DetectFormat(sourceStream));
+                var imageFormat = await ImageDecoder.DetectFormatAsync(sourceStream);
                 if (imageFormat == null)
                 {
                     throw new FormatException("Image data is of invalid or not recognized format");
                 }
 
                 sourceStream.Position = 0;
-                var imageInfo = await Task.Run(() => SixLabors.ImageSharp.Image.Identify(sourceStream));
+                var imageSize = await ImageDecoder.DetectSizeAsync(sourceStream);
                 sourceStream.Position = 0;
 
                 var uid = Guid.NewGuid().ToString();
 
-                var imageItem = new ItemDescription($"i_{uid}", $"{uid}.{imageFormat.FileExtensions.First()}", imageFormat.MimeTypes.First(), imageProperties);
+                var imageItem = new ItemDescription($"i_{uid}", $"{uid}.{imageFormat.Extension}", imageFormat.MimeType, imageProperties);
                 await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData);
                 Contents.Add(imageItem);
 
-                var pageItem = new PageDescription($"p_{uid}", $"{uid}.xhtml", imageInfo.Width > imageInfo.Height, pageNavLabel);
+                var pageItem = new PageDescription($"p_{uid}", $"{uid}.xhtml", imageSize.Width > imageSize.Height, pageNavLabel);
                 var html = EpubXmlWriter.GenerateContentPage(imageItem.Path);
                 await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html);
                 Contents.Add(pageItem);
