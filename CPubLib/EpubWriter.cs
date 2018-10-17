@@ -38,7 +38,7 @@ namespace CPubLib
         public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
         {
             var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel);
-            var page = entries.pageDescription;
+            var page = entries.Item2;
 
             Pages.Add(page);
             if (FirstAddedPage == null)
@@ -55,7 +55,7 @@ namespace CPubLib
             }
 
             var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null);
-            CoverPage = entries.pageDescription;
+            CoverPage = entries.Item2;
             if (setAsFirstPage)
             {
                 CoverPage.NavigationLabel = "Cover";
@@ -63,7 +63,7 @@ namespace CPubLib
             }
         }
 
-        private async Task<(ItemDescription imageDescription, PageDescription pageDescription)> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel)
+        private async Task<Tuple<ItemDescription, PageDescription>> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel)
         {
             if (DynamicDataAdded)
             {
@@ -102,7 +102,7 @@ namespace CPubLib
                 await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html);
                 Contents.Add(pageItem);
 
-                return (imageItem, pageItem);
+                return Tuple.Create(imageItem, pageItem);
             }
             finally
             {
