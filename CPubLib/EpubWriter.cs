@@ -1,4 +1,5 @@
 ﻿using CPubLib.Internal;
+using CPubLib.Platform;
 using CPubLib.Resources;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace CPubLib
 {
     public class EPUBWriter : IDisposable
     {
+        private static IImageDecoder ImageDecoder { get; } = new ImageDecoder();
         private ZipArchive BackingArchive { get; }
         private bool StaticDataAdded { get; set; } = false;
         private bool DynamicDataAdded { get; set; } = false;
@@ -36,7 +38,7 @@ namespace CPubLib
         public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
         {
             var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel);
-            var page = entries.pageDescription;
+            var page = entries.Item2;
 
             Pages.Add(page);
             if (FirstAddedPage == null)
@@ -53,7 +55,7 @@ namespace CPubLib
             }
 
             var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null);
-            CoverPage = entries.pageDescription;
+            CoverPage = entries.Item2;
             if (setAsFirstPage)
             {
                 CoverPage.NavigationLabel = "Cover";
@@ -61,7 +63,7 @@ namespace CPubLib
             }
         }
 
-        private async Task<(ItemDescription imageDescription, PageDescription pageDescription)> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel)
+        private async Task<Tuple<ItemDescription, PageDescription>> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel)
         {
             if (DynamicDataAdded)
             {
@@ -79,19 +81,16 @@ namespace CPubLib
                     await imageData.CopyToAsync(sourceStream);
                 }
 
-                var imageFormat = await Task.Run(() => SixLabors.ImageSharp.Image.DetectFormat(sourceStream));
-                if (imageFormat == null)
+                var imageInfo = await ImageDecoder.DecodeAsync(sourceStream);
+                sourceStream.Position = 0;
+                if (imageInfo == null)
                 {
                     throw new FormatException("Image data is of invalid or not recognized format");
                 }
 
-                sourceStream.Position = 0;
-                var imageInfo = await Task.Run(() => SixLabors.ImageSharp.Image.Identify(sourceStream));
-                sourceStream.Position = 0;
-
                 var uid = Guid.NewGuid().ToString();
 
-                var imageItem = new ItemDescription($"i_{uid}", $"{uid}.{imageFormat.FileExtensions.First()}", imageFormat.MimeTypes.First(), imageProperties);
+                var imageItem = new ItemDescription($"i_{uid}", $"{uid}.{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
                 await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData);
                 Contents.Add(imageItem);
 
@@ -100,7 +99,7 @@ namespace CPubLib
                 await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html);
                 Contents.Add(pageItem);
 
-                return (imageItem, pageItem);
+                return Tuple.Create(imageItem, pageItem);
             }
             finally
             {
