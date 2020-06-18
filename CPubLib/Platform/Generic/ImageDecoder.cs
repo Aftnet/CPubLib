@@ -1,6 +1,7 @@
 ﻿using CPubLib.Internal;
 using SixLabors.ImageSharp;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CPubLib.Platform
@@ -18,19 +19,19 @@ namespace CPubLib.Platform
                 {
                     var imageInfo = Image.Identify(imageStream);
 
-                    if (format.DefaultMimeType == ImageFormats.Bmp.DefaultMimeType)
+                    if (SixLabors.ImageSharp.Formats.Bmp.BmpFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Bmp(imageInfo.Width, imageInfo.Height);
                     }
-                    else if (format.DefaultMimeType == ImageFormats.Gif.DefaultMimeType)
+                    else if (SixLabors.ImageSharp.Formats.Gif.GifFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Gif(imageInfo.Width, imageInfo.Height);
                     }
-                    else if (format.DefaultMimeType == ImageFormats.Jpeg.DefaultMimeType)
+                    else if (SixLabors.ImageSharp.Formats.Png.PngFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Jpeg(imageInfo.Width, imageInfo.Height);
                     }
-                    else if (format.DefaultMimeType == ImageFormats.Png.DefaultMimeType)
+                    else if (SixLabors.ImageSharp.Formats.Jpeg.JpegFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Png(imageInfo.Width, imageInfo.Height);
                     }
