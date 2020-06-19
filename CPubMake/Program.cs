@@ -66,7 +66,7 @@ namespace CPubMake
                 using (var writer = new EPUBWriter(outStream))
                 {
                     var metadata = writer.Metadata;
-                    metadata.Title = !string.IsNullOrEmpty(Title) ? Title : outputFile.Name;
+                    metadata.Title = !string.IsNullOrEmpty(Title) ? Title : Path.GetFileNameWithoutExtension(outputFile.Name);
                     metadata.Author = !string.IsNullOrEmpty(Author) ? Author : nameof(CPubMake);
                     metadata.Publisher = !string.IsNullOrEmpty(Publisher) ? Publisher : nameof(CPubMake);
                     metadata.Description = Description;
@@ -80,13 +80,13 @@ namespace CPubMake
 
                     if (targetFiles.cover != null)
                     {
-                        Console.Write($"\rAdding {targetFiles.cover.Name} as cover       ");
+                        Console.WriteLine($"Adding {targetFiles.cover.Name} as cover");
                         await AddImageToEpub(writer, targetFiles.cover, true);
                     }
 
                     foreach (var i in targetFiles.pages)
                     {
-                        Console.Write($"\rAdding {i.Name} as page                ");
+                        Console.WriteLine($"Adding {i.Name} as page");
                         await AddImageToEpub(writer, i, false);
                     }
 
