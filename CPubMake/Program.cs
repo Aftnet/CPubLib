@@ -80,13 +80,13 @@ namespace CPubMake
 
                     if (targetFiles.cover != null)
                     {
-                        Console.Write($"\rAdding {targetFiles.cover.Name} as cover       ");
+                        Console.WriteLine($"Adding {targetFiles.cover.Name} as cover");
                         await AddImageToEpub(writer, targetFiles.cover, true);
                     }
 
                     foreach (var i in targetFiles.pages)
                     {
-                        Console.Write($"\rAdding {i.Name} as page                ");
+                        Console.WriteLine($"Adding {i.Name} as page");
                         await AddImageToEpub(writer, i, false);
                     }
 

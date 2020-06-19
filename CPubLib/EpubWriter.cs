@@ -90,7 +90,7 @@ namespace CPubLib
 
                 var uid = Guid.NewGuid().ToString();
 
-                var imageItem = new ItemDescription($"i_{uid}", $"{uid}.{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
+                var imageItem = new ItemDescription($"i_{uid}", $"{uid}{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
                 await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData);
                 Contents.Add(imageItem);
 

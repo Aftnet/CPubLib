@@ -27,11 +27,11 @@ namespace CPubLib.Platform
                     {
                         output = ImageInfo.Gif(imageInfo.Width, imageInfo.Height);
                     }
-                    else if (SixLabors.ImageSharp.Formats.Png.PngFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
+                    else if (SixLabors.ImageSharp.Formats.Jpeg.JpegFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Jpeg(imageInfo.Width, imageInfo.Height);
                     }
-                    else if (SixLabors.ImageSharp.Formats.Jpeg.JpegFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
+                    else if (SixLabors.ImageSharp.Formats.Png.PngFormat.Instance.MimeTypes.Contains(format.DefaultMimeType))
                     {
                         output = ImageInfo.Png(imageInfo.Width, imageInfo.Height);
                     }
