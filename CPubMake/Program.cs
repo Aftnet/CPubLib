@@ -21,6 +21,9 @@ namespace CPubMake
         [FileExists]
         public string CoverPath { get; }
 
+        [Option("--first-image-as-cover", CommandOptionType.NoValue, Description = "Use the first image found as cover. Overrides manually set cover, if any")]
+        public bool FirstImageAsCover { get; }
+
         [Option("-i|--image", CommandOptionType.MultipleValue, Description = "Path to image to include in epub. Specify multiple times in the order in which images should be included")]
         [FileExists]
         public IReadOnlyList<string> InputImagePaths { get; }
@@ -34,19 +37,19 @@ namespace CPubMake
         public string OutputPath { get; }
 
         [Option("--title", CommandOptionType.SingleValue)]
-        public string Title { get; set; }
+        public string Title { get; }
 
         [Option("--author", CommandOptionType.SingleValue)]
-        public string Author { get; set; }
+        public string Author { get; }
 
         [Option("--publisher", CommandOptionType.SingleValue)]
-        public string Publisher { get; set; }
+        public string Publisher { get; }
 
         [Option("--description", CommandOptionType.SingleValue)]
-        public string Description { get; set; }
+        public string Description { get; }
 
         [Option("--tag", CommandOptionType.MultipleValue)]
-        public IReadOnlyList<string> Tags { get; set; }
+        public IReadOnlyList<string> Tags { get; }
 
         private async Task<int> OnExecuteAsync()
         {
@@ -101,24 +104,6 @@ namespace CPubMake
             return 0;
         }
 
-        private void AutoGenerateMissingMetadata(FileInfo outputFile)
-        {
-            if (string.IsNullOrEmpty(Title))
-            {
-                Title = outputFile.Name;
-            }
-
-            if (string.IsNullOrEmpty(Author))
-            {
-                Author = nameof(CPubMake);
-            }
-
-            if (string.IsNullOrEmpty(Publisher))
-            {
-                Publisher = nameof(CPubMake);
-            }
-        }
-
         private (IList<FileInfo> pages, FileInfo cover) GenerateTargetFilesList()
         {
             var pages = new List<FileInfo>();
@@ -135,7 +120,11 @@ namespace CPubMake
             }
          
             var cover = default(FileInfo);
-            if (!string.IsNullOrEmpty(CoverPath))
+            if (FirstImageAsCover)
+            {
+                cover = pages.First();
+            }
+            else if (!string.IsNullOrEmpty(CoverPath))
             {
                 var testCover = new FileInfo(CoverPath);
                 if (testCover.Exists)
