@@ -22,6 +22,9 @@ namespace CPubLib
         private PageDescription CoverPage { get; set; }
         private PageDescription FirstAddedPage { get; set; }
 
+        private int ChapterCounter = 1;
+        private int PageCounter = 1;
+
         public Metadata Metadata { get; } = new Metadata();
 
         public EPUBWriter(Stream stream)
@@ -37,13 +40,20 @@ namespace CPubLib
 
         public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
         {
-            var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel);
+            var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel, $"C{ChapterCounter:D4}P{PageCounter:D4}");
             var page = entries.Item2;
 
             Pages.Add(page);
             if (FirstAddedPage == null)
             {
                 FirstAddedPage = page;
+            }
+
+            PageCounter++;
+            if (!string.IsNullOrEmpty(navigationLabel))
+            {
+                ChapterCounter++;
+                PageCounter = 1;
             }
         }
 
@@ -54,7 +64,7 @@ namespace CPubLib
                 throw new InvalidOperationException("Cover can only be set once");
             }
 
-            var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null);
+            var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null, "Cover");
             CoverPage = entries.Item2;
             if (setAsFirstPage)
             {
@@ -63,7 +73,7 @@ namespace CPubLib
             }
         }
 
-        private async Task<Tuple<ItemDescription, PageDescription>> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel)
+        private async Task<Tuple<ItemDescription, PageDescription>> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel, string fileNameBase)
         {
             if (DynamicDataAdded)
             {
@@ -88,13 +98,11 @@ namespace CPubLib
                     throw new FormatException("Image data is of invalid or not recognized format");
                 }
 
-                var uid = Guid.NewGuid().ToString();
-
-                var imageItem = new ItemDescription($"i_{uid}", $"{uid}{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
+                var imageItem = new ItemDescription($"i_{fileNameBase}", $"{fileNameBase}{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
                 await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData);
                 Contents.Add(imageItem);
 
-                var pageItem = new PageDescription($"p_{uid}", $"{uid}.xhtml", imageInfo.Width > imageInfo.Height, pageNavLabel);
+                var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", imageInfo.Width > imageInfo.Height, pageNavLabel);
                 var html = EpubXmlWriter.GenerateContentPage(imageItem.Path);
                 await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html);
                 Contents.Add(pageItem);

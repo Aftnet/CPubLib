@@ -1,7 +1,7 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
-
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.1.2">
+  
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;uap10.0;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard1.4;uap10.0;net472</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Alberto Fustinoni</Authors>
     <PackageProjectUrl>https://github.com/Aftnet/CPubLib</PackageProjectUrl>
@@ -29,7 +29,7 @@
   </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.1" />
     <Compile Include="Platform\Generic\*.cs" />
   </ItemGroup>
 
