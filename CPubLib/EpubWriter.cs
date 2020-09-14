@@ -22,8 +22,8 @@ namespace CPubLib
         private PageDescription CoverPage { get; set; }
         private PageDescription FirstAddedPage { get; set; }
 
-        private int ChapterCounter = 1;
-        private int PageCounter = 1;
+        private int ChapterCounter = 0;
+        private int PageCounter = 0;
 
         public Metadata Metadata { get; } = new Metadata();
 
@@ -40,6 +40,16 @@ namespace CPubLib
 
         public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
         {
+            if (!string.IsNullOrEmpty(navigationLabel) || ChapterCounter == 0)
+            {
+                ChapterCounter++;
+                PageCounter = 1;
+            }
+            else
+            {
+                PageCounter++;
+            }
+
             var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel, $"C{ChapterCounter:D4}P{PageCounter:D4}");
             var page = entries.Item2;
 
@@ -47,13 +57,6 @@ namespace CPubLib
             if (FirstAddedPage == null)
             {
                 FirstAddedPage = page;
-            }
-
-            PageCounter++;
-            if (!string.IsNullOrEmpty(navigationLabel))
-            {
-                ChapterCounter++;
-                PageCounter = 1;
             }
         }
 
