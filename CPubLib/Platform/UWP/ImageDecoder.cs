@@ -13,7 +13,7 @@ namespace CPubLib.Platform
             var output = default(ImageInfo);
             try
             {
-                var decoder = await BitmapDecoder.CreateAsync(imageStream.AsRandomAccessStream());
+                var decoder = await BitmapDecoder.CreateAsync(imageStream.AsRandomAccessStream()).AsTask().ConfigureAwait(false);
                 var codecId = decoder.DecoderInformation.CodecId;
 
                 if (codecId == BitmapDecoder.BmpDecoderId)

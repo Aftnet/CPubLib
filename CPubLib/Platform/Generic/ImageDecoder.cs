@@ -8,13 +8,13 @@ namespace CPubLib.Platform
 {
     internal class ImageDecoder : IImageDecoder
     {
-        public Task<ImageInfo> DecodeAsync(Stream imageStream)
+        public async Task<ImageInfo> DecodeAsync(Stream imageStream)
         {
             var output = default(ImageInfo);
 
             try
             {
-                var format = Image.DetectFormat(imageStream);
+                var format = await Image.DetectFormatAsync(imageStream).ConfigureAwait(false);
                 if (format != null)
                 {
                     var imageInfo = Image.Identify(imageStream);
@@ -42,7 +42,7 @@ namespace CPubLib.Platform
                 output = null;
             }
 
-            return Task.FromResult(output);
+            return output;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace CPubLib
                 PageCounter++;
             }
 
-            var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel, $"C{ChapterCounter:D4}P{PageCounter:D4}");
+            var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel, $"C{ChapterCounter:D4}P{PageCounter:D4}").ConfigureAwait(false);
             var page = entries.Item2;
 
             Pages.Add(page);
@@ -67,7 +67,7 @@ namespace CPubLib
                 throw new InvalidOperationException("Cover can only be set once");
             }
 
-            var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null, "Cover");
+            var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null, "Cover").ConfigureAwait(false);
             CoverPage = entries.Item2;
             if (setAsFirstPage)
             {
@@ -83,7 +83,7 @@ namespace CPubLib
                 throw new InvalidOperationException("Unable to add content after container has been finalized");
             }
 
-            await AddStaticDataAsync();
+            await AddStaticDataAsync().ConfigureAwait(false);
 
             var sourceStream = imageData;
             try
@@ -91,10 +91,10 @@ namespace CPubLib
                 if (!imageData.CanSeek)
                 {
                     sourceStream = new MemoryStream();
-                    await imageData.CopyToAsync(sourceStream);
+                    await imageData.CopyToAsync(sourceStream).ConfigureAwait(false);
                 }
 
-                var imageInfo = await ImageDecoder.DecodeAsync(sourceStream);
+                var imageInfo = await ImageDecoder.DecodeAsync(sourceStream).ConfigureAwait(false);
                 sourceStream.Position = 0;
                 if (imageInfo == null)
                 {
@@ -102,12 +102,12 @@ namespace CPubLib
                 }
 
                 var imageItem = new ItemDescription($"i_{fileNameBase}", $"{fileNameBase}{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
-                await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData);
+                await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData).ConfigureAwait(false);
                 Contents.Add(imageItem);
 
                 var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", imageInfo.Width > imageInfo.Height, pageNavLabel);
                 var html = EpubXmlWriter.GenerateContentPage(imageItem.Path);
-                await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html);
+                await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html).ConfigureAwait(false);
                 Contents.Add(pageItem);
 
                 return Tuple.Create(imageItem, pageItem);
@@ -134,14 +134,14 @@ namespace CPubLib
                 return;
             }
 
-            await AddTextEntryAsync(Strings.EpubContentEntryName, EpubXmlWriter.GenerateContentOPF(Metadata, Contents, Pages));
+            await AddTextEntryAsync(Strings.EpubContentEntryName, EpubXmlWriter.GenerateContentOPF(Metadata, Contents, Pages)).ConfigureAwait(false);
 
             if (!Pages.Where(d => d.NavigationLabel != null).Any())
             {
                 FirstAddedPage.NavigationLabel = Metadata.Title;
             }
 
-            await AddTextEntryAsync(Strings.EpubNavEntryName, EpubXmlWriter.GenerateNavXML(Pages));
+            await AddTextEntryAsync(Strings.EpubNavEntryName, EpubXmlWriter.GenerateNavXML(Pages)).ConfigureAwait(false);
             DynamicDataAdded = true;
         }
 
@@ -152,13 +152,13 @@ namespace CPubLib
                 return;
             }
 
-            await AddTextEntryAsync("mimetype", "application/epub+zip", CompressionLevel.NoCompression);
-            await AddTextEntryAsync("META-INF/container.xml", Strings.EpubContainerContent);
+            await AddTextEntryAsync("mimetype", "application/epub+zip", CompressionLevel.NoCompression).ConfigureAwait(false);
+            await AddTextEntryAsync("META-INF/container.xml", Strings.EpubContainerContent).ConfigureAwait(false);
 
             Contents.Add(new ItemDescription("nav", "nav.xhtml", "application/xhtml+xml", "nav"));
             var item = new ItemDescription("css", "style.css", "text/css");
             Contents.Add(item);
-            await AddTextEntryAsync($"{Strings.EpubContentRoot}{item.Path}", Strings.EpubPageCSS);
+            await AddTextEntryAsync($"{Strings.EpubContentRoot}{item.Path}", Strings.EpubPageCSS).ConfigureAwait(false);
 
             StaticDataAdded = true;
         }
@@ -169,7 +169,7 @@ namespace CPubLib
             using (var stream = entry.Open())
             using (var writer = new StreamWriter(stream))
             {
-                await writer.WriteAsync(content);
+                await writer.WriteAsync(content).ConfigureAwait(false);
             }
         }
 
@@ -179,7 +179,7 @@ namespace CPubLib
             using (var stream = entry.Open())
             using (var writer = new StreamWriter(stream))
             {
-                await content.CopyToAsync(stream);
+                await content.CopyToAsync(stream).ConfigureAwait(false);
             }
         }
     }

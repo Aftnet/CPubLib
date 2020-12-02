@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <Compile Include="*.cs" />
     <Compile Include="Internal\*.cs" />
     <Compile Include="Properties\*.cs" />
@@ -29,7 +28,7 @@
   </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
     <Compile Include="Platform\Generic\*.cs" />
   </ItemGroup>
 
@@ -43,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <Reference Include="PresentationCore" />
     <Reference Include="WindowsBase" />
     <Compile Include="Platform\Net46\*.cs" />
