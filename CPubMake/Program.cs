@@ -48,8 +48,8 @@ namespace CPubMake
         [Option("--description", CommandOptionType.SingleValue)]
         public string Description { get; }
 
-        [Option("--tag", CommandOptionType.MultipleValue)]
-        public IReadOnlyList<string> Tags { get; }
+        [Option("--tags", CommandOptionType.SingleValue)]
+        public string Tags { get; }
 
         private async Task<int> OnExecuteAsync()
         {
@@ -74,9 +74,9 @@ namespace CPubMake
                     metadata.Author = !string.IsNullOrEmpty(Author) ? Author : nameof(CPubMake);
                     metadata.Publisher = !string.IsNullOrEmpty(Publisher) ? Publisher : nameof(CPubMake);
                     metadata.Description = Description;
-                    if (Tags != null)
+                    if (!string.IsNullOrEmpty(Tags))
                     {
-                        foreach (var i in Tags.Distinct())
+                        foreach (var i in Tags.Split(',').Select(d => d.Trim()))
                         {
                             metadata.Tags.Add(i);
                         }
