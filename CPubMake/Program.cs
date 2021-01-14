@@ -28,7 +28,7 @@ namespace CPubMake
         [FileExists]
         public IReadOnlyList<string> InputImagePaths { get; }
 
-        [Option("-d|--directory", CommandOptionType.MultipleValue, Description = "Path to image folder to include in epub. All files of supported format found inside (non recursively) will be included in the epub in alphabetical order")]
+        [Option("-d|--directory", CommandOptionType.MultipleValue, Description = "Path to image folder to include in epub. All files of supported format found inside will be included in the epub in alphabetical path order")]
         [DirectoryExists]
         public IReadOnlyList<string> InputDirectoryPaths { get; }
 
@@ -59,6 +59,7 @@ namespace CPubMake
             if (string.IsNullOrEmpty(OutputPath))
             {
                 Console.WriteLine("Specify an output file");
+                return -1;
             }
 
             var outputFile = new FileInfo(OutputPath);
@@ -115,8 +116,7 @@ namespace CPubMake
             var directories = InputDirectoryPaths != null ? InputDirectoryPaths.Select(d => new DirectoryInfo(d)).Where(d => d.Exists) : Enumerable.Empty<DirectoryInfo>();
             foreach (var i in directories)
             {
-                var files = i.EnumerateFiles();
-                pages.AddRange(files.Where(d => SupportedImageExtension.Contains(d.Extension)).OrderBy(d => d.FullName));
+                GetSupportedFilesRecursive(pages, i);
             }
          
             var cover = default(FileInfo);
@@ -166,6 +166,19 @@ namespace CPubMake
             catch
             {
                 Console.WriteLine($"Unable to add {imageFile.FullName} to epub");
+            }
+        }
+
+        private void GetSupportedFilesRecursive(IList<FileInfo> files, DirectoryInfo target)
+        {
+            foreach (var i in target.EnumerateFiles().Where(d => SupportedImageExtension.Contains(d.Extension)).OrderBy(d => d.Name))
+            {
+                files.Add(i);
+            }
+
+            foreach (var i in target.EnumerateDirectories().OrderBy(d => d.Name))
+            {
+                GetSupportedFilesRecursive(files, i);
             }
         }
     }
