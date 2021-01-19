@@ -2,13 +2,11 @@
 {
     internal class PageDescription : ItemDescription
     {
-        public bool IsLandscape { get; }
         public string NavigationLabel { get; set; }
 
-        public PageDescription(string id, string path, bool isLandscape, string navigationLabel = null) :
-            base(id, path, "application/xhtml+xml", null)
+        public PageDescription(string id, string path, string navigationLabel = null) :
+            base(id, path, "application/xhtml+xml", "svg")
         {
-            IsLandscape = isLandscape;
             NavigationLabel = navigationLabel;
         }
     }

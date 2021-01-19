@@ -131,24 +131,19 @@
   <data name="EpubContentRoot" xml:space="preserve">
     <value>OEBPS/</value>
   </data>
-  <data name="EpubPageCSS" xml:space="preserve">
-    <value>html, body, div {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-}
-
-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}</value>
+  <data name="EpubPageTemplate" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;meta name="viewport" content="width={1}, height={2}" /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;svg width="{1}" height="{2}" viewBox="0 0 {1} {2}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"&gt;
+        &lt;image x="{5}" y="0" width="{3}" height="{4}" xlink:href="{0}"/&gt;
+    &lt;/svg&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</value>
   </data>
   <data name="EpubNavEntryName" xml:space="preserve">
     <value>OEBPS/nav.xhtml</value>

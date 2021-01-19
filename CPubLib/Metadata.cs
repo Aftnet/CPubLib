@@ -20,6 +20,8 @@ namespace CPubLib
         public string Relation { get; set; }
         public string Copyright { get; set; }
 
+        public bool RightToLeftReading { get; set; } = false;
+
         public bool Valid => Validate();
 
         private bool Validate()

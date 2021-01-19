@@ -8,6 +8,8 @@ namespace CPubLib.Internal
 {
     internal static class EpubXmlWriter
     {
+        public enum ImageFitting { Full, LeftHalf, RightHalf};
+
         private static XNamespace XHTMLNS { get; } = XNamespace.Get("http://www.w3.org/1999/xhtml");
         private static XNamespace DCNS { get; } = XNamespace.Get("http://purl.org/dc/elements/1.1/");
         private static XNamespace OPFNS { get; } = XNamespace.Get("http://www.idpf.org/2007/opf");
@@ -15,23 +17,14 @@ namespace CPubLib.Internal
 
         private static XDeclaration XmlDeclaration { get; } = new XDeclaration("1.0", "utf-8", null);
 
-        public static string GenerateContentPage(string imagePath)
+        public static string GenerateContentPage(string imagePath, int imageWidth, int imageHeight, ImageFitting fit)
         {
-            var lang = "en-US";
-            var doc = new XDocument(XmlDeclaration,
-                new XElement(XHTMLNS + "html", new XAttribute("lang", lang), new XAttribute(XNamespace.Xml + "lang", lang),
-                    new XElement(new XElement(XHTMLNS + "head",
-                        new XElement(XHTMLNS + "meta", new XAttribute("charset", "utf-8")),
-                        new XElement(XHTMLNS + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=2480, height=3508")),
-                        new XElement(XHTMLNS + "link", new XAttribute("rel", "stylesheet"), new XAttribute("type", "text/css"), new XAttribute("href", "style.css"))
-                    )),
-                    new XElement(XHTMLNS + "body",
-                        new XElement(XHTMLNS + "div",
-                            new XElement(XHTMLNS + "img", new XAttribute("src", imagePath), new XAttribute("alt", "none")))
-                    )
-                 ));   
+            var canvasWidth = fit == ImageFitting.Full ? imageWidth : imageWidth / 2;
+            var canvasHeight = imageHeight;
+            var imageHorizontalOffset = fit == ImageFitting.RightHalf ? -imageWidth / 2 : 0;
 
-            return doc.ToStringWithDeclaration();
+            var output = string.Format(Resources.Strings.EpubPageTemplate, imagePath, canvasWidth, canvasHeight, imageWidth, imageHeight, imageHorizontalOffset);
+            return output;
         }
 
         public static string GenerateContentOPF(Metadata metadata, IEnumerable<ItemDescription> contents, IEnumerable<PageDescription> spineEntries)
@@ -93,14 +86,7 @@ namespace CPubLib.Internal
                 return output;
             })));
 
-            root.Add(new XElement(OPFNS + "spine", spineEntries.Select(d => {
-                var output = new XElement(OPFNS + "itemref", new XAttribute("idref", d.ID));
-                if(d.IsLandscape)
-                {
-                    output.Add(new XAttribute("properties", "rendition:page-spread-center"));
-                }
-                return output;
-            })));
+            root.Add(new XElement(OPFNS + "spine", new XAttribute("page-progression-direction", metadata.RightToLeftReading ? "rtl": "ltr"), spineEntries.Select(d => new XElement(OPFNS + "itemref", new XAttribute("idref", d.ID)))));
             return doc.ToStringWithDeclaration();
         }
 

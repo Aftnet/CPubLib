@@ -19,9 +19,8 @@ namespace CPubLib
 
         private IList<ItemDescription> Contents { get; } = new List<ItemDescription>();
         private IList<PageDescription> Pages { get; } = new List<PageDescription>();
-        private PageDescription CoverPage { get; set; }
-        private PageDescription FirstAddedPage { get; set; }
 
+        private bool CoverSet = false;
         private int ChapterCounter = 0;
         private int PageCounter = 0;
 
@@ -38,87 +37,78 @@ namespace CPubLib
             BackingArchive.Dispose();
         }
 
-        public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
-        {
-            if (!string.IsNullOrEmpty(navigationLabel) || ChapterCounter == 0)
-            {
-                ChapterCounter++;
-                PageCounter = 1;
-            }
-            else
-            {
-                PageCounter++;
-            }
-
-            var entries = await GenerateContentsFromImageAsync(imageData, null, navigationLabel, $"C{ChapterCounter:D4}P{PageCounter:D4}").ConfigureAwait(false);
-            var page = entries.Item2;
-
-            Pages.Add(page);
-            if (FirstAddedPage == null)
-            {
-                FirstAddedPage = page;
-            }
-        }
-
         public async Task SetCoverAsync(Stream imageData, bool setAsFirstPage = false)
         {
-            if (CoverPage != null)
+            if (CoverSet)
             {
                 throw new InvalidOperationException("Cover can only be set once");
             }
 
-            var entries = await GenerateContentsFromImageAsync(imageData, "cover-image", null, "Cover").ConfigureAwait(false);
-            CoverPage = entries.Item2;
+            await AddStaticDataAsync().ConfigureAwait(false);
+            var image = await AddImageAsync(imageData, "_Cover", true).ConfigureAwait(false);
             if (setAsFirstPage)
             {
-                CoverPage.NavigationLabel = "Cover";
-                Pages.Insert(0, CoverPage);
+                await AddPagesForImageAsync(image, null).ConfigureAwait(false);
+            }
+
+            CoverSet = true;
+        }
+
+        public async Task AddPageAsync(Stream imageData, string navigationLabel = null)
+        {
+            if (!CoverSet)
+            {
+                throw new InvalidOperationException("Cover needs to be set before adding pages");
+            }
+
+            if (!string.IsNullOrEmpty(navigationLabel) || ChapterCounter == 0)
+            {
+                ChapterCounter++;
+                PageCounter = 0;
+            }
+
+            PageCounter++;
+            var image = await AddImageAsync(imageData, $"C{ChapterCounter:D4}P{PageCounter:D4}", false).ConfigureAwait(false);
+            await AddPagesForImageAsync(image, navigationLabel).ConfigureAwait(false);
+        }
+
+        private async Task AddPagesForImageAsync(ImageDescription image, string pageNavLabel)
+        {
+            var fileNameBase = Path.GetFileNameWithoutExtension(image.Path);
+            if (image.Width < image.Height)
+            {
+                await AddPageForImageWithFittingAsync(image, pageNavLabel, EpubXmlWriter.ImageFitting.Full).ConfigureAwait(false);
+            }
+            else if(Metadata.RightToLeftReading)
+            {
+                await AddPageForImageWithFittingAsync(image, pageNavLabel, EpubXmlWriter.ImageFitting.RightHalf).ConfigureAwait(false);
+                await AddPageForImageWithFittingAsync(image, null, EpubXmlWriter.ImageFitting.LeftHalf).ConfigureAwait(false);
+            }
+            else
+            {
+                await AddPageForImageWithFittingAsync(image, pageNavLabel, EpubXmlWriter.ImageFitting.LeftHalf).ConfigureAwait(false);
+                await AddPageForImageWithFittingAsync(image, null, EpubXmlWriter.ImageFitting.RightHalf).ConfigureAwait(false);
             }
         }
 
-        private async Task<Tuple<ItemDescription, PageDescription>> GenerateContentsFromImageAsync(Stream imageData, string imageProperties, string pageNavLabel, string fileNameBase)
+        private async Task AddPageForImageWithFittingAsync(ImageDescription image, string pageNavLabel, EpubXmlWriter.ImageFitting fitting)
         {
-            if (DynamicDataAdded)
+            var fileNameBase = Path.GetFileNameWithoutExtension(image.Path);
+            switch(fitting)
             {
-                throw new InvalidOperationException("Unable to add content after container has been finalized");
+                case EpubXmlWriter.ImageFitting.LeftHalf:
+                    fileNameBase += "_L";
+                    break;
+                case EpubXmlWriter.ImageFitting.RightHalf:
+                    fileNameBase += "_R";
+                    break;
             }
 
-            await AddStaticDataAsync().ConfigureAwait(false);
-
-            var sourceStream = imageData;
-            try
-            {
-                if (!imageData.CanSeek)
-                {
-                    sourceStream = new MemoryStream();
-                    await imageData.CopyToAsync(sourceStream).ConfigureAwait(false);
-                }
-
-                var imageInfo = await ImageDecoder.DecodeAsync(sourceStream).ConfigureAwait(false);
-                sourceStream.Position = 0;
-                if (imageInfo == null)
-                {
-                    throw new FormatException("Image data is of invalid or not recognized format");
-                }
-
-                var imageItem = new ItemDescription($"i_{fileNameBase}", $"{fileNameBase}{imageInfo.Extension}", imageInfo.MimeType, imageProperties);
-                await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", imageData).ConfigureAwait(false);
-                Contents.Add(imageItem);
-
-                var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", imageInfo.Width > imageInfo.Height, pageNavLabel);
-                var html = EpubXmlWriter.GenerateContentPage(imageItem.Path);
-                await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html).ConfigureAwait(false);
-                Contents.Add(pageItem);
-
-                return Tuple.Create(imageItem, pageItem);
-            }
-            finally
-            {
-                if (sourceStream != imageData)
-                {
-                    sourceStream.Dispose();
-                }
-            }
+            var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", pageNavLabel);
+            var html = EpubXmlWriter.GenerateContentPage(image.Path, image.Width, image.Height, fitting);
+            await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html).ConfigureAwait(false);
+            Contents.Add(pageItem);
+            Pages.Add(pageItem);
         }
 
         public async Task FinalizeAsync()
@@ -128,17 +118,16 @@ namespace CPubLib
                 return;
             }
 
-            if (FirstAddedPage == null)
+            if (!Pages.Any())
             {
-                //Cannot create empty book
-                return;
+                throw new InvalidOperationException("Unable to create book with no pages");
             }
 
             await AddTextEntryAsync(Strings.EpubContentEntryName, EpubXmlWriter.GenerateContentOPF(Metadata, Contents, Pages)).ConfigureAwait(false);
 
             if (!Pages.Where(d => d.NavigationLabel != null).Any())
             {
-                FirstAddedPage.NavigationLabel = Metadata.Title;
+                Pages.First().NavigationLabel = Metadata.Title;
             }
 
             await AddTextEntryAsync(Strings.EpubNavEntryName, EpubXmlWriter.GenerateNavXML(Pages)).ConfigureAwait(false);
@@ -156,11 +145,36 @@ namespace CPubLib
             await AddTextEntryAsync("META-INF/container.xml", Strings.EpubContainerContent).ConfigureAwait(false);
 
             Contents.Add(new ItemDescription("nav", "nav.xhtml", "application/xhtml+xml", "nav"));
-            var item = new ItemDescription("css", "style.css", "text/css");
-            Contents.Add(item);
-            await AddTextEntryAsync($"{Strings.EpubContentRoot}{item.Path}", Strings.EpubPageCSS).ConfigureAwait(false);
 
             StaticDataAdded = true;
+        }
+
+        private async Task<ImageDescription> AddImageAsync(Stream imageData, string fileNameBase, bool isCover)
+        {
+            var memStream = default(MemoryStream);
+            var srcStream = imageData;
+
+            if (!imageData.CanSeek)
+            {
+                memStream = new MemoryStream();
+                await imageData.CopyToAsync(memStream).ConfigureAwait(false);
+                memStream.Position = 0;
+                srcStream = memStream;
+            }
+
+            var imageInfo = await ImageDecoder.DecodeAsync(srcStream).ConfigureAwait(false);
+            srcStream.Position = 0;
+            if (imageInfo == null)
+            {
+                throw new FormatException("Image data is of invalid or not recognized format");
+            }
+
+            var properties = isCover ? "cover-image" : null;
+            var imageItem = new ImageDescription($"i_{fileNameBase}", $"{fileNameBase}{imageInfo.Extension}", imageInfo.Width, imageInfo.Height, imageInfo.MimeType, properties);
+            await AddBinaryEntryAsync($"{Strings.EpubContentRoot}{imageItem.Path}", srcStream).ConfigureAwait(false);
+            memStream?.Dispose();
+            Contents.Add(imageItem);
+            return imageItem;
         }
 
         private async Task AddTextEntryAsync(string entryName, string content, CompressionLevel compressionLevel = CompressionLevel.Optimal)

@@ -20,7 +20,7 @@ namespace CPubLib.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -103,27 +103,22 @@ namespace CPubLib.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to html, body, div {
-        ///    width: 100%;
-        ///    height: 100%;
-        ///    margin: 0;
-        ///}
-        ///
-        ///div {
-        ///    display: flex;
-        ///    justify-content: center;
-        ///    align-items: center;
-        ///}
-        ///
-        ///img {
-        ///    width: 100%;
-        ///    height: 100%;
-        ///    object-fit: contain;
-        ///}.
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;html lang=&quot;en-US&quot; xml:lang=&quot;en-US&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+        ///  &lt;head&gt;
+        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
+        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width={1}, height={2}&quot; /&gt;
+        ///  &lt;/head&gt;
+        ///  &lt;body&gt;
+        ///    &lt;svg width=&quot;{1}&quot; height=&quot;{2}&quot; viewBox=&quot;0 0 {1} {2}&quot; version=&quot;1.1&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xml:space=&quot;preserve&quot;&gt;
+        ///        &lt;image x=&quot;{5}&quot; y=&quot;0&quot; width=&quot;{3}&quot; height=&quot;{4}&quot; xlink:href=&quot;{0}&quot;/&gt;
+        ///    &lt;/svg&gt;
+        ///  &lt;/body&gt;
+        ///&lt;/html [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string EpubPageCSS {
+        internal static string EpubPageTemplate {
             get {
-                return ResourceManager.GetString("EpubPageCSS", resourceCulture);
+                return ResourceManager.GetString("EpubPageTemplate", resourceCulture);
             }
         }
     }

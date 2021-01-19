@@ -15,7 +15,7 @@ namespace CPubLib.Test
 
         private static DirectoryInfo ImagesFolder { get; } = new DirectoryInfo(Path.Combine("..", "..", "..", "TestImages"));
         private static ISet<string> ValidExtensions { get; } = new HashSet<string> { ".jpg", ".png" };
-        private static IReadOnlyList<PageDescription> TestItems { get; } = Enumerable.Range(0, 3).Select((d, e) => new PageDescription($"ItemId{d}", $"ItemId{d}.xhtml", e % 2 == 0, $"ItemId{d}NavLabel")).ToArray();
+        private static IReadOnlyList<PageDescription> TestItems { get; } = Enumerable.Range(0, 3).Select((d, e) => new PageDescription($"ItemId{d}", $"ItemId{d}.xhtml", $"ItemId{d}NavLabel")).ToArray();
 
         private ITestOutputHelper OutputHelper { get; }
 
@@ -55,7 +55,7 @@ namespace CPubLib.Test
         [Fact]
         public void ContentPageGenerationWorks()
         {
-            var xml = EpubXmlWriter.GenerateContentPage("imagepath.jpg");
+            var xml = EpubXmlWriter.GenerateContentPage("imagepath.jpg", 400, 300, 0);
             Assert.NotEmpty(xml);
             OutputHelper.WriteLine(xml);
         }

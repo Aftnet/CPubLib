@@ -2,7 +2,7 @@
   "profiles": {
     "CPubMake": {
       "commandName": "Project",
-      "commandLineArgs": "-d \"..\\..\\..\\..\\CpubLib.Test\\TestImages\" -o \"Test.epub\" --title \"PKNA 0\" --first-image-as-cover --author \"Disney Italia\" --publisher \"Disney Italia\" --tag \"Sci-fi comic\""
+      "commandLineArgs": "-d \"..\\..\\..\\..\\CpubLib.Test\\TestImages\" -o \"Test.epub\" --title \"PKNA 0\" --author \"Disney Italia\" --publisher \"Disney Italia\" --tags \"Sci-fi,Test\""
     }
   }
 }
