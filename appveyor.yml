@@ -34,13 +34,13 @@ artifacts:
 - path: '**\*.nupkg'
 - path: '**\CPubMake_*.zip'
 deploy:
-#- provider: NuGet
-#  api_key:
-#    secure: bR/0Cw2eRUeBiW/ZtJ2yNui38HoUM7kPDhN3POQFdYaE9kH2b+ZCppX+MG8b0xn3
-#  skip_symbols: true
-#  artifact: /.*\.nupkg/
-#  on:
-#    branch: master
+- provider: NuGet
+  api_key:
+    secure: bR/0Cw2eRUeBiW/ZtJ2yNui38HoUM7kPDhN3POQFdYaE9kH2b+ZCppX+MG8b0xn3
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
 - provider: GitHub
   release: 'CPubMake-v$(APPVEYOR_BUILD_VERSION)'
   description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
