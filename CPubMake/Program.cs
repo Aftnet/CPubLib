@@ -21,9 +21,6 @@ namespace CPubMake
         [FileExists]
         public string CoverPath { get; }
 
-        [Option("--first-image-as-cover", CommandOptionType.NoValue, Description = "Use the first image found as cover. Overrides manually set cover, if any")]
-        public bool FirstImageAsCover { get; }
-
         [Option("-i|--image", CommandOptionType.MultipleValue, Description = "Path to image to include in epub. Specify multiple times in the order in which images should be included")]
         [FileExists]
         public IReadOnlyList<string> InputImagePaths { get; }
@@ -51,11 +48,11 @@ namespace CPubMake
         [Option("--tags", CommandOptionType.SingleValue)]
         public string Tags { get; }
 
+        [Option("-rtl|--right-to-left", CommandOptionType.NoValue, Description = "Reading direction is right to left")]
+        public bool RightToLeftReading { get; }
+
         private async Task<int> OnExecuteAsync()
         {
-            var banner = $"{nameof(CPubMake)} v{typeof(Program).Assembly.GetName().Version.ToString()}";
-            Console.WriteLine(banner);
-
             if (string.IsNullOrEmpty(OutputPath))
             {
                 Console.WriteLine("Specify an output file");
@@ -63,6 +60,8 @@ namespace CPubMake
             }
 
             var outputFile = new FileInfo(OutputPath);
+            Console.WriteLine($"Generating {outputFile.Name}");
+
             var targetFiles = GenerateTargetFilesList();
             try
             {
@@ -74,6 +73,7 @@ namespace CPubMake
                     metadata.Author = !string.IsNullOrEmpty(Author) ? Author : nameof(CPubMake);
                     metadata.Publisher = !string.IsNullOrEmpty(Publisher) ? Publisher : nameof(CPubMake);
                     metadata.Description = Description;
+                    metadata.RightToLeftReading = RightToLeftReading;
                     if (!string.IsNullOrEmpty(Tags))
                     {
                         foreach (var i in Tags.Split(',').Select(d => d.Trim()))
@@ -84,16 +84,21 @@ namespace CPubMake
 
                     if (targetFiles.cover != null)
                     {
-                        Console.WriteLine($"Adding {targetFiles.cover.Name} as cover");
+                        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+                        Console.Write("Adding cover");
                         await AddImageToEpub(writer, targetFiles.cover, true);
                     }
 
+                    var ctr = 1;
                     foreach (var i in targetFiles.pages)
                     {
-                        Console.WriteLine($"Adding {i.Name} as page");
+                        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+                        Console.Write($"Adding page {ctr}/{targetFiles.pages.Count}");
                         await AddImageToEpub(writer, i, false);
+                        ctr++;
                     }
 
+                    Console.WriteLine(string.Empty);
                     await writer.FinalizeAsync();
                 }
             }
@@ -119,12 +124,8 @@ namespace CPubMake
                 GetSupportedFilesRecursive(pages, i);
             }
          
-            var cover = default(FileInfo);
-            if (FirstImageAsCover)
-            {
-                cover = pages.First();
-            }
-            else if (!string.IsNullOrEmpty(CoverPath))
+            var cover = pages.First();
+            if (!string.IsNullOrEmpty(CoverPath))
             {
                 var testCover = new FileInfo(CoverPath);
                 if (testCover.Exists)
@@ -134,10 +135,7 @@ namespace CPubMake
             }
 
             //Remove cover from pages list if present
-            if (cover != null)
-            {
-                pages = pages.Where(d => d.FullName != cover.FullName).ToList();
-            }
+            pages = pages.Where(d => d.FullName != cover.FullName).ToList();
 
             return (pages, cover);
         }
@@ -155,7 +153,7 @@ namespace CPubMake
                 {
                     if (asCover)
                     {
-                        await writer.SetCoverAsync(imageStream, true);
+                        await writer.SetCoverAsync(imageStream, false);
                     }
                     else
                     {

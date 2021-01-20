@@ -2,14 +2,14 @@
 {
     internal class PageDescription : ItemDescription
     {
-        public bool IsLandscape { get; }
         public string NavigationLabel { get; set; }
+        public string RefProperties { get; set; }
 
-        public PageDescription(string id, string path, bool isLandscape, string navigationLabel = null) :
-            base(id, path, "application/xhtml+xml", null)
+        public PageDescription(string id, string path, string navigationLabel, string properties, string refProperties) :
+            base(id, path, "application/xhtml+xml", string.IsNullOrEmpty(properties) ? "svg" : $"svg {properties}")
         {
-            IsLandscape = isLandscape;
             NavigationLabel = navigationLabel;
+            RefProperties = refProperties;
         }
     }
 }
