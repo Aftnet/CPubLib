@@ -41,3 +41,13 @@ deploy:
   artifact: /.*\.nupkg/
   on:
     branch: master
+- provider: GitHub
+  release: CPubMake-v$(APPVEYOR_BUILD_VERSION)
+  description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
+  auth_token:
+    secure: NMn/VM+fZ3Xzj7CTJLJYh0G7+TzIVrRHQ4IHJnCnxojN45gbkDRDk+3h0r3/SG0I
+  artifact: /.*\.zip/
+  draft: true
+  prerelease: true
+#  on:
+#    branch: master
