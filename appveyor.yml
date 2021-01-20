@@ -19,6 +19,8 @@ before_build:
 - ps: '&nuget restore'
 build:
   verbosity: minimal
+on_success:
+  - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c Release -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
 test:
   assemblies:
     only:
