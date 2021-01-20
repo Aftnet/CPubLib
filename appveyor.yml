@@ -33,7 +33,7 @@ test:
     - '**\*.Test.dll'
 artifacts:
 - path: '**\*.nupkg'
-- path: '**\CPubMake_*.zip'
+- path: '**\CPubMake*.zip'
 deploy:
 - provider: NuGet
   api_key:
