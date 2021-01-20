@@ -42,7 +42,7 @@ deploy:
   on:
     APPVEYOR_REPO_TAG: true
 - provider: GitHub
-  release: 'CPubMake-v$(APPVEYOR_BUILD_VERSION)'
+  tag: $(APPVEYOR_REPO_TAG_NAME)
   description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
   auth_token:
     secure: NMn/VM+fZ3Xzj7CTJLJYh0G7+TzIVrRHQ4IHJnCnxojN45gbkDRDk+3h0r3/SG0I
