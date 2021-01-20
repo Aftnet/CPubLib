@@ -169,7 +169,7 @@ namespace CPubMake
 
         private void GetSupportedFilesRecursive(IList<FileInfo> files, DirectoryInfo target)
         {
-            foreach (var i in target.EnumerateFiles().Where(d => SupportedImageExtension.Contains(d.Extension)).OrderBy(d => d.Name))
+            foreach (var i in target.EnumerateFiles().Where(d => SupportedImageExtension.Contains(d.Extension.ToLowerInvariant())).OrderBy(d => d.Name))
             {
                 files.Add(i);
             }
