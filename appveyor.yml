@@ -7,6 +7,7 @@ branches:
 image: Visual Studio 2019
 configuration: Release
 shallow_clone: true
+skip_tags: true
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -39,15 +40,11 @@ deploy:
     secure: bR/0Cw2eRUeBiW/ZtJ2yNui38HoUM7kPDhN3POQFdYaE9kH2b+ZCppX+MG8b0xn3
   skip_symbols: true
   artifact: /.*\.nupkg/
-  on:
-    APPVEYOR_REPO_TAG: true
 - provider: GitHub
-  tag: $(APPVEYOR_REPO_TAG_NAME)
+  tag: CPubMake-v$(APPVEYOR_BUILD_VERSION)
   description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
   auth_token:
     secure: NMn/VM+fZ3Xzj7CTJLJYh0G7+TzIVrRHQ4IHJnCnxojN45gbkDRDk+3h0r3/SG0I
   artifact: /.*\.zip/
   draft: false
   prerelease: false
-  on:
-    APPVEYOR_REPO_TAG: true
