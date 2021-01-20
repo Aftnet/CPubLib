@@ -63,6 +63,12 @@ namespace CPubMake
             Console.WriteLine($"Generating {outputFile.Name}");
 
             var targetFiles = GenerateTargetFilesList();
+            if (!targetFiles.pages.Any())
+            {
+                Console.WriteLine("No images for pages found");
+                return -1;
+            }
+
             try
             {
                 using (var outStream = outputFile.Open(FileMode.Create))
@@ -123,7 +129,12 @@ namespace CPubMake
             {
                 GetSupportedFilesRecursive(pages, i);
             }
-         
+
+            if (!pages.Any())
+            {
+                return (pages, null);
+            }
+
             var cover = pages.First();
             if (!string.IsNullOrEmpty(CoverPath))
             {
