@@ -45,7 +45,7 @@ namespace CPubLib
             }
 
             await AddStaticDataAsync().ConfigureAwait(false);
-            var image = await AddImageAsync(imageData, "_Cover", true).ConfigureAwait(false);
+            var image = await AddImageAsync(imageData, "S00-Cover", true).ConfigureAwait(false);
             if (setAsFirstPage)
             {
                 await AddPagesForImageAsync(image, null).ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace CPubLib
             }
 
             PageCounter++;
-            var image = await AddImageAsync(imageData, $"C{ChapterCounter:D4}P{PageCounter:D4}", false).ConfigureAwait(false);
+            var image = await AddImageAsync(imageData, $"S01-C{ChapterCounter:D6}P{PageCounter:D6}", false).ConfigureAwait(false);
             await AddPagesForImageAsync(image, navigationLabel).ConfigureAwait(false);
         }
 
