@@ -1,9 +1,9 @@
 version: 1.1.{build}
 pull_requests:
   do_not_increment_build_number: true
-#branches:
-#  only:
-#  - master
+branches:
+  only:
+  - master
 image: Visual Studio 2019
 configuration: Release
 shallow_clone: true
@@ -18,14 +18,14 @@ dotnet_csproj:
 before_build:
 - ps: '&nuget restore'
 build_script:
-#- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib\\CPubLib.csproj"
-#- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
+- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib\\CPubLib.csproj"
+- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
 - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
 - ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_win-x64.zip"
-#- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x86 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
-#- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x86\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_win-x86.zip"
-#- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
-#- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\osx-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_osx-x64.zip"
+- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x86 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x86\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_win-x86.zip"
+- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\osx-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_osx-x64.zip"
 test:
   assemblies:
     only:
@@ -49,5 +49,5 @@ deploy:
   artifact: /.*\.zip/
   draft: false
   prerelease: false
-#  on:
-#    branch: dev
+  on:
+    branch: master
