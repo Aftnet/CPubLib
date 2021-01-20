@@ -40,7 +40,7 @@ deploy:
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
-    branch: master
+    APPVEYOR_REPO_TAG: true
 - provider: GitHub
   release: 'CPubMake-v$(APPVEYOR_BUILD_VERSION)'
   description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
@@ -50,4 +50,4 @@ deploy:
   draft: false
   prerelease: false
   on:
-    branch: master
+    APPVEYOR_REPO_TAG: true
