@@ -17,10 +17,12 @@ dotnet_csproj:
   informational_version: '{version}'
 before_build:
 - ps: '&nuget restore'
-build:
-  verbosity: minimal
-on_success:
-  - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c Release -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+build_script:
+  - ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib\\CPubLib.csproj"
+  - ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
+  - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+  - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x86 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+  - ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
 test:
   assemblies:
     only:
