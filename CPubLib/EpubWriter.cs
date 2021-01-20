@@ -94,20 +94,20 @@ namespace CPubLib
         private async Task AddPageForImageWithFittingAsync(ImageDescription image, string pageNavLabel, EpubXmlWriter.ImageFitting fitting)
         {
             var fileNameBase = Path.GetFileNameWithoutExtension(image.Path);
-            var properties = string.Empty;
+            var refProperties = default(string);
             switch(fitting)
             {
                 case EpubXmlWriter.ImageFitting.LeftHalf:
                     fileNameBase += "_L";
-                    properties = "page-spread-left";
+                    refProperties = "page-spread-left";
                     break;
                 case EpubXmlWriter.ImageFitting.RightHalf:
                     fileNameBase += "_R";
-                    properties = "page-spread-right";
+                    refProperties = "page-spread-right";
                     break;
             }
 
-            var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", pageNavLabel, properties);
+            var pageItem = new PageDescription($"p_{fileNameBase}", $"{fileNameBase}.xhtml", pageNavLabel, null, refProperties);
             var html = EpubXmlWriter.GenerateContentPage(image.Path, image.Width, image.Height, fitting);
             await AddTextEntryAsync($"{Strings.EpubContentRoot}{pageItem.Path}", html).ConfigureAwait(false);
             Contents.Add(pageItem);

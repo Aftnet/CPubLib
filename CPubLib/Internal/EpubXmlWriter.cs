@@ -86,7 +86,17 @@ namespace CPubLib.Internal
                 return output;
             })));
 
-            root.Add(new XElement(OPFNS + "spine", new XAttribute("page-progression-direction", metadata.RightToLeftReading ? "rtl": "ltr"), spineEntries.Select(d => new XElement(OPFNS + "itemref", new XAttribute("idref", d.ID)))));
+            root.Add(new XElement(OPFNS + "spine", new XAttribute("page-progression-direction", metadata.RightToLeftReading ? "rtl" : "ltr"), spineEntries.Select(d =>
+            {
+                var output = new XElement(OPFNS + "itemref", new XAttribute("idref", d.ID));
+                if (d.RefProperties != null)
+                {
+                    output.Add(new XAttribute("properties", d.RefProperties));
+                }
+
+                return output;
+            })));
+
             return doc.ToStringWithDeclaration();
         }
 
