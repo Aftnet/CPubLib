@@ -4,8 +4,8 @@
     {
         public string NavigationLabel { get; set; }
 
-        public PageDescription(string id, string path, string navigationLabel = null) :
-            base(id, path, "application/xhtml+xml", "svg")
+        public PageDescription(string id, string path, string navigationLabel, string properties) :
+            base(id, path, "application/xhtml+xml", string.IsNullOrEmpty(properties) ? "svg" : $"svg {properties}")
         {
             NavigationLabel = navigationLabel;
         }

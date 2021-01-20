@@ -7,7 +7,7 @@
         public string MIMEType { get; }
         public string Properties { get; }
 
-        public ItemDescription(string id, string path, string mimeType, string properties = null)
+        public ItemDescription(string id, string path, string mimeType, string properties)
         {
             ID = id;
             Path = path;

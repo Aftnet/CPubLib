@@ -15,7 +15,7 @@ namespace CPubLib.Test
 
         private static DirectoryInfo ImagesFolder { get; } = new DirectoryInfo(Path.Combine("..", "..", "..", "TestImages"));
         private static ISet<string> ValidExtensions { get; } = new HashSet<string> { ".jpg", ".png" };
-        private static IReadOnlyList<PageDescription> TestItems { get; } = Enumerable.Range(0, 3).Select((d, e) => new PageDescription($"ItemId{d}", $"ItemId{d}.xhtml", $"ItemId{d}NavLabel")).ToArray();
+        private static IReadOnlyList<PageDescription> TestItems { get; } = Enumerable.Range(0, 3).Select((d, e) => new PageDescription($"ItemId{d}", $"ItemId{d}.xhtml", $"ItemId{d}NavLabel", null)).ToArray();
 
         private ITestOutputHelper OutputHelper { get; }
 
