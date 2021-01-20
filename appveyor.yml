@@ -17,19 +17,37 @@ dotnet_csproj:
   informational_version: '{version}'
 before_build:
 - ps: '&nuget restore'
-build:
-  verbosity: minimal
+build_script:
+- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib\\CPubLib.csproj"
+- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
+- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_win-x64.zip"
+- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x86 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x86\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_win-x86.zip"
+- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
+- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\osx-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake_osx-x64.zip"
 test:
   assemblies:
     only:
     - '**\*.Test.dll'
 artifacts:
 - path: '**\*.nupkg'
+- path: '**\CPubMake_*.zip'
 deploy:
 - provider: NuGet
   api_key:
     secure: bR/0Cw2eRUeBiW/ZtJ2yNui38HoUM7kPDhN3POQFdYaE9kH2b+ZCppX+MG8b0xn3
   skip_symbols: true
   artifact: /.*\.nupkg/
+  on:
+    branch: master
+- provider: GitHub
+  release: 'CPubMake-v$(APPVEYOR_BUILD_VERSION)'
+  description: '$(APPVEYOR_REPO_COMMIT_MESSAGE)'
+  auth_token:
+    secure: NMn/VM+fZ3Xzj7CTJLJYh0G7+TzIVrRHQ4IHJnCnxojN45gbkDRDk+3h0r3/SG0I
+  artifact: /.*\.zip/
+  draft: false
+  prerelease: false
   on:
     branch: master
