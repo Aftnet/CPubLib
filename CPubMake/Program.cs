@@ -114,7 +114,7 @@ namespace CPubMake
                     foreach (var i in targetFiles.pages)
                     {
                         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
-                        Console.Write($"Adding page {ctr}/{targetFiles.pages.Count}");
+                        Console.Write($"Adding image {ctr}/{targetFiles.pages.Count}");
                         await AddImageToEpub(writer, i, false);
                         ctr++;
                     }

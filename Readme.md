@@ -50,5 +50,6 @@ Options:
   --publisher           Publisher
   --description         Description
   --tags                Tags
+  --meta				Custom metadata, specify as key=val
   -rtl|--right-to-left  Reading direction is right to left
 ```
