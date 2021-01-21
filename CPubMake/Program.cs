@@ -112,6 +112,7 @@ namespace CPubMake
             catch
             {
                 Console.WriteLine($"Error generating {outputFile.FullName}");
+                return -1;
             }
 
             tempFile.MoveTo(outputFile.FullName, true);
