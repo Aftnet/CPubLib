@@ -48,6 +48,9 @@ namespace CPubMake
         [Option("--tags", CommandOptionType.SingleValue)]
         public string Tags { get; }
 
+        [Option("--meta", CommandOptionType.MultipleValue, Description = "Custom metadata, specify as key=val")]
+        public List<string> Metadata { get; }
+
         [Option("-rtl|--right-to-left", CommandOptionType.NoValue, Description = "Reading direction is right to left")]
         public bool RightToLeftReading { get; }
 
@@ -85,6 +88,18 @@ namespace CPubMake
                         foreach (var i in Tags.Split(',').Select(d => d.Trim()))
                         {
                             metadata.Tags.Add(i);
+                        }
+                    }
+
+                    if (Metadata != null)
+                    {
+                        foreach (var i in Metadata)
+                        {
+                            var components = i.Split('=');
+                            if (components.Length == 2)
+                            {
+                                metadata.Custom[components[0]] = components[1];
+                            }
                         }
                     }
 
