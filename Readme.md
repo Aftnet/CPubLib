@@ -7,6 +7,12 @@ A library to create epubs from collection of images and a command line app to cr
 
 ## CPubLib
 
+- Creates fully compliant EPUBv3 files
+- Non destructive: images are untouched and ordering preserved - easy to revert to CBZ or other archive without modifying reading order
+- Can embed standard and custom metadata
+- Intelligent handling of single image spreads (wide images meant overlap two pages)
+- Tested and working on Adobe Digital Editions, Apple Books, Lithium, Kobo ereader
+
 Get via Nuget. CPubLib works similarly to any framework writer (think TextWriter): it single use and is meant to share the lifecycle of the stream it operates on.
 
 ```C#
