@@ -21,12 +21,9 @@ before_build:
 build_script:
 - ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib\\CPubLib.csproj"
 - ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
-- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
-- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake-v$($env:APPVEYOR_BUILD_VERSION)-win-x64.zip"
-- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r win-x86 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
-- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\win-x86\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake-v$($env:APPVEYOR_BUILD_VERSION)-win-x86.zip"
-- ps: "&dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true"
-- ps: "Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\osx-x64\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake-v$($env:APPVEYOR_BUILD_VERSION)-osx-x64.zip"
+- ps: "&msbuild -p:Configuration=$($env:CONFIGURATION) CPubLib.Test\\CPubLib.Test.csproj"
+- ps: "$targetRids = @('win-x64', 'win-arm64', 'osx-x64', 'linux-x64', 'linux-arm64')"
+- ps: "$targetRids | foreach { &dotnet publish CPubMake\\CPubMake.csproj -c $($env:CONFIGURATION) -f net5.0 -r $_ --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true; Compress-Archive -Path CPubMake\\bin\\Release\\net5.0\\$_\\publish\\* -DestinationPath CPubMake\\bin\\Release\\net5.0\\CPubMake-v$($env:APPVEYOR_BUILD_VERSION)-$_.zip }"
 test:
   assemblies:
     only:

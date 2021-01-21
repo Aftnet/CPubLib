@@ -93,6 +93,8 @@ namespace CPubLib.Test
             metadata.Tags.Add("Alpha");
             metadata.Tags.Add("Beta");
             metadata.Tags.Add("Gamma");
+
+            metadata.Custom["SomeKey"] = "SomeVal";
         }
     }
 }

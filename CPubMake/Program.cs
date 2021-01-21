@@ -48,6 +48,9 @@ namespace CPubMake
         [Option("--tags", CommandOptionType.SingleValue)]
         public string Tags { get; }
 
+        [Option("--meta", CommandOptionType.MultipleValue, Description = "Custom metadata, specify as key=val")]
+        public List<string> Metadata { get; }
+
         [Option("-rtl|--right-to-left", CommandOptionType.NoValue, Description = "Reading direction is right to left")]
         public bool RightToLeftReading { get; }
 
@@ -88,6 +91,18 @@ namespace CPubMake
                         }
                     }
 
+                    if (Metadata != null)
+                    {
+                        foreach (var i in Metadata)
+                        {
+                            var components = i.Split('=');
+                            if (components.Length == 2)
+                            {
+                                metadata.Custom[components[0]] = components[1];
+                            }
+                        }
+                    }
+
                     if (targetFiles.cover != null)
                     {
                         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
@@ -99,7 +114,7 @@ namespace CPubMake
                     foreach (var i in targetFiles.pages)
                     {
                         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
-                        Console.Write($"Adding page {ctr}/{targetFiles.pages.Count}");
+                        Console.Write($"Adding image {ctr}/{targetFiles.pages.Count}");
                         await AddImageToEpub(writer, i, false);
                         ctr++;
                     }
