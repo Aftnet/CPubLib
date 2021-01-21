@@ -63,6 +63,7 @@ namespace CPubMake
             }
 
             var outputFile = new FileInfo(OutputPath);
+            var tempFile = new FileInfo(OutputPath + "_part");
             Console.WriteLine($"Generating {outputFile.Name}");
 
             var targetFiles = GenerateTargetFilesList();
@@ -74,7 +75,7 @@ namespace CPubMake
 
             try
             {
-                using (var outStream = outputFile.Open(FileMode.Create))
+                using (var outStream = tempFile.Open(FileMode.Create))
                 using (var writer = new EPUBWriter(outStream))
                 {
                     var metadata = writer.Metadata;
@@ -126,8 +127,10 @@ namespace CPubMake
             catch
             {
                 Console.WriteLine($"Error generating {outputFile.FullName}");
+                return -1;
             }
 
+            tempFile.MoveTo(outputFile.FullName, true);
             return 0;
         }
 
@@ -190,6 +193,7 @@ namespace CPubMake
             catch
             {
                 Console.WriteLine($"Unable to add {imageFile.FullName} to epub");
+                throw;
             }
         }
 
