@@ -20,6 +20,8 @@ namespace CPubLib
         public string Relation { get; set; }
         public string Copyright { get; set; }
 
+        public IDictionary<string, string> Custom { get; } = new SortedDictionary<string, string>();
+
         public bool RightToLeftReading { get; set; } = false;
 
         public bool Valid => Validate();

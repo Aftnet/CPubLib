@@ -7,7 +7,13 @@ A library to create epubs from collection of images and a command line app to cr
 
 ## CPubLib
 
-CPubLib works similarly to any framework writer (think TextWriter): it single use and is meant to share the lifecycle of the stream it operates on.
+- Creates fully compliant EPUBv3 files
+- Non destructive: images are untouched and ordering preserved - easy to revert to CBZ or other archive without modifying reading order
+- Can embed standard and custom metadata
+- Intelligent handling of single image spreads (wide images meant overlap two pages)
+- Tested and working on Adobe Digital Editions, Apple Books, Lithium, Kobo ereader
+
+Get via Nuget. CPubLib works similarly to any framework writer (think TextWriter): it single use and is meant to share the lifecycle of the stream it operates on.
 
 ```C#
 using(var outStream = get_some_stream()); // Doesn't need to be seekable
@@ -20,10 +26,20 @@ using (var writer = new EPUBWriter(outStream))
 	metadata.Description = Description;
 	metadata.RightToLeftReading = RightToLeftReading;
 
-	await writer.SetCoverAsync(imageStream, false); // Needs to be called before adding any page
-	await writer.AddPageAsync(imageStream); // Add a page
-	await writer.AddPageAsync(imageStream, "Chapter 1"); // Page that shows up in bookmarks
+	using(var imageStream = get_some_image_stream())
+	{
+		await writer.SetCoverAsync(imageStream, false); // Needs to be called before adding any page
+	}
 
+	using(var imageStream = get_some_other_image_stream())
+	{
+	    await writer.AddPageAsync(imageStream); // Add a page
+	}
+
+	using(var imageStream = get_some_image_stream())
+	{
+	    await writer.AddPageAsync(imageStream, "Chapter 1"); // Page that shows up in bookmarks
+	}
 	await writer.FinalizeAsync();
 }
 ```
@@ -50,5 +66,6 @@ Options:
   --publisher           Publisher
   --description         Description
   --tags                Tags
+  --meta				Custom metadata, specify as key=val
   -rtl|--right-to-left  Reading direction is right to left
 ```

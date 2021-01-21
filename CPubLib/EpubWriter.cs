@@ -12,6 +12,8 @@ namespace CPubLib
 {
     public class EPUBWriter : IDisposable
     {
+        public const int FileFormatVersion = 1;
+
         private static IImageDecoder ImageDecoder { get; } = new ImageDecoder();
         private ZipArchive BackingArchive { get; }
         private bool StaticDataAdded { get; set; } = false;
