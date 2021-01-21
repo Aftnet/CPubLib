@@ -48,7 +48,7 @@ namespace CPubLib.Internal
             var root = new XElement(OPFNS + "package",
                 new XAttribute("version", "3.0"),
                 new XAttribute("unique-identifier", "bookid"),
-                new XAttribute("prefix", "rendition: http://www.idpf.org/vocab/rendition/#"));
+                new XAttribute("prefix", "rendition: http://www.idpf.org/vocab/rendition/# cpublib: https://github.com/Aftnet/CPubLib"));
             doc.Add(root);
 
             var section = new XElement(OPFNS + "metadata", new XAttribute(XNamespace.Xmlns + "dc", DCNS),
@@ -65,6 +65,11 @@ namespace CPubLib.Internal
             foreach (var i in metadata.Tags)
             {
                 section.Add(new XElement(DCNS + "subject", i));
+            }
+            metadata.Custom["fileformatversion"] = EPUBWriter.FileFormatVersion.ToString();
+            foreach (var i in metadata.Custom)
+            {
+                section.Add(new XElement(OPFNS + "meta", i.Value, new XAttribute("property", $"cpublib:{i.Key}")));
             }
 
             AddElementIfValueNotNull(section, DCNS + "source", metadata.Source);
