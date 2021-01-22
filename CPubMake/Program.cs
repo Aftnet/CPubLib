@@ -54,6 +54,9 @@ namespace CPubMake
         [Option("-rtl|--right-to-left", CommandOptionType.NoValue, Description = "Reading direction is right to left")]
         public bool RightToLeftReading { get; }
 
+        [Option("--ignore-cover-aspect-ratio", CommandOptionType.NoValue, Description = "Allow using covers with unsuitable aspect ratio")]
+        public bool IgnoreCoverAspectRatio { get; }
+
         private async Task<int> OnExecuteAsync()
         {
             if (string.IsNullOrEmpty(OutputPath))
@@ -64,6 +67,12 @@ namespace CPubMake
 
             var outputFile = new FileInfo(OutputPath);
             var tempFile = new FileInfo(OutputPath + "_part");
+            if (tempFile.Exists)
+            {
+                tempFile.Delete();
+                tempFile.Refresh();
+            }
+
             Console.WriteLine($"Generating {outputFile.Name}");
 
             var targetFiles = GenerateTargetFilesList();
@@ -122,14 +131,17 @@ namespace CPubMake
 
                     Console.WriteLine(string.Empty);
                     await writer.FinalizeAsync();
+                    await outStream.FlushAsync();
                 }
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine($"Error generating {outputFile.FullName}");
+                Console.WriteLine(string.Empty);
+                Console.WriteLine($"Error generating {outputFile.FullName}\n{e.Message}");
                 return -1;
             }
 
+            tempFile.Refresh();
             tempFile.MoveTo(outputFile.FullName, true);
             return 0;
         }
@@ -182,7 +194,7 @@ namespace CPubMake
                 {
                     if (asCover)
                     {
-                        await writer.SetCoverAsync(imageStream, false);
+                        await writer.SetCoverAsync(imageStream, false, !IgnoreCoverAspectRatio);
                     }
                     else
                     {
@@ -190,10 +202,9 @@ namespace CPubMake
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine($"Unable to add {imageFile.FullName} to epub");
-                throw;
+                throw new Exception($"Unable to add {imageFile.FullName} to epub.\n{e.Message}");
             }
         }
 

@@ -40,11 +40,15 @@ using (var writer = new EPUBWriter(outStream))
 	{
 	    await writer.AddPageAsync(imageStream, "Chapter 1"); // Page that shows up in bookmarks
 	}
+
 	await writer.FinalizeAsync();
 }
 ```
 
 ## CPubMake
+
+Precompiled binaries for Windows, macoOS and Linux available [here](https://github.com/Aftnet/CPubLib/releases).
+On macOS and Linux you may need to add executing permissions to the main executable (chmod +x /path/to/CPubMake) to run.
 
 Show help with `CPubMake -?`
 
@@ -54,18 +58,17 @@ Make fixed layout epubs from images
 Usage: cpubmake [options]
 
 Options:
-  -?                    Show help information
-  -c|--cover            Path to image to include as cover
-  -i|--image            Path to image to include in epub. Specify multiple times in the order in which images should be
-                        included
-  -d|--directory        Path to image folder to include in epub. All files of supported format found inside will be
-                        included in the epub in alphabetical path order
-  -o|--output           Path to output file
-  --title               Title
-  --author              Author
-  --publisher           Publisher
-  --description         Description
-  --tags                Tags
-  --meta				Custom metadata, specify as key=val
-  -rtl|--right-to-left  Reading direction is right to left
+  -?							Show help information
+  -c|--cover					Path to image to include as cover
+  -i|--image					Path to image to include in epub. Specify multiple times in the order in which images should be included
+  -d|--directory				Path to image folder to include in epub. All files of supported format found inside will be included in the epub in alphabetical path order
+  -o|--output					Path to output file
+  --title						Title
+  --author						Author
+  --publisher					Publisher
+  --description					Description
+  --tags						Tags
+  --meta						Custom metadata, specify as key=val
+  -rtl|--right-to-left			Reading direction is right to left
+  --ignore-cover-aspect-ratio	Allow using covers with unsuitable aspect ratio
 ```
