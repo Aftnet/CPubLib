@@ -35,7 +35,6 @@ namespace CPubLib
 
         public void Dispose()
         {
-            FinalizeAsync().Wait();
             BackingArchive.Dispose();
         }
 
