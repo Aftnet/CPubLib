@@ -40,6 +40,7 @@ using (var writer = new EPUBWriter(outStream))
 	{
 	    await writer.AddPageAsync(imageStream, "Chapter 1"); // Page that shows up in bookmarks
 	}
+
 	await writer.FinalizeAsync();
 }
 ```
