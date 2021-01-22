@@ -67,6 +67,7 @@ namespace CPubMake
             if (tempFile.Exists)
             {
                 tempFile.Delete();
+                tempFile.Refresh();
             }
 
             Console.WriteLine($"Generating {outputFile.Name}");
@@ -127,6 +128,7 @@ namespace CPubMake
 
                     Console.WriteLine(string.Empty);
                     await writer.FinalizeAsync();
+                    await outStream.FlushAsync();
                 }
             }
             catch
@@ -135,6 +137,7 @@ namespace CPubMake
                 return -1;
             }
 
+            tempFile.Refresh();
             tempFile.MoveTo(outputFile.FullName, true);
             return 0;
         }
