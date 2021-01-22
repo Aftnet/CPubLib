@@ -64,6 +64,11 @@ namespace CPubMake
 
             var outputFile = new FileInfo(OutputPath);
             var tempFile = new FileInfo(OutputPath + "_part");
+            if (tempFile.Exists)
+            {
+                tempFile.Delete();
+            }
+
             Console.WriteLine($"Generating {outputFile.Name}");
 
             var targetFiles = GenerateTargetFilesList();
