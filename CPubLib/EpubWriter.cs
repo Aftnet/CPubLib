@@ -39,7 +39,7 @@ namespace CPubLib
             BackingArchive.Dispose();
         }
 
-        public async Task SetCoverAsync(Stream imageData, bool setAsFirstPage = false)
+        public async Task SetCoverAsync(Stream imageData, bool setAsFirstPage = false, bool checkAspectRatio = true)
         {
             if (CoverSet)
             {
@@ -47,7 +47,7 @@ namespace CPubLib
             }
 
             await AddStaticDataAsync().ConfigureAwait(false);
-            var image = await AddImageAsync(imageData, "S00-Cover", true).ConfigureAwait(false);
+            var image = await AddImageAsync(imageData, "S00-Cover", true, checkAspectRatio).ConfigureAwait(false);
             if (setAsFirstPage)
             {
                 await AddPagesForImageAsync(image, null).ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace CPubLib
             }
 
             PageCounter++;
-            var image = await AddImageAsync(imageData, $"S01-C{ChapterCounter:D6}P{PageCounter:D6}", false).ConfigureAwait(false);
+            var image = await AddImageAsync(imageData, $"S01-C{ChapterCounter:D6}P{PageCounter:D6}", false, false).ConfigureAwait(false);
             await AddPagesForImageAsync(image, navigationLabel).ConfigureAwait(false);
         }
 
@@ -154,7 +154,7 @@ namespace CPubLib
             StaticDataAdded = true;
         }
 
-        private async Task<ImageDescription> AddImageAsync(Stream imageData, string fileNameBase, bool isCover)
+        private async Task<ImageDescription> AddImageAsync(Stream imageData, string fileNameBase, bool isCover, bool checkCoverAR)
         {
             var memStream = default(MemoryStream);
             var srcStream = imageData;
@@ -172,6 +172,15 @@ namespace CPubLib
             if (imageInfo == null)
             {
                 throw new FormatException("Image data is of invalid or not recognized format");
+            }
+
+            const float coverARLimit = 3.0f / 4.0f;
+            if (isCover && checkCoverAR)
+            {
+                if (((float)imageInfo.Width / (float)imageInfo.Height) > coverARLimit)
+                {
+                    throw new FormatException("Cover has unsuitable aspect ratio");
+                }
             }
 
             var properties = isCover ? "cover-image" : null;
