@@ -47,7 +47,7 @@ using (var writer = new EPUBWriter(outStream))
 
 ## CPubMake
 
-Precompiled binaries for Windows, macoOS and Linux available [here](/releases).
+Precompiled binaries for Windows, macoOS and Linux available [here](https://github.com/Aftnet/CPubLib/releases).
 On macOS and Linux you may need to add executing permissions to the main executable (chmod +x /path/to/CPubMake) to run.
 
 Show help with `CPubMake -?`
