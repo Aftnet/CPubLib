@@ -49,6 +49,7 @@ namespace CPubLib.Test
                 }
 
                 SetMetadata(writer.Metadata);
+                await writer.FinalizeAsync();
             }
         }
 
